@@ -1,0 +1,28 @@
+---
+title: My Document
+output: html_document
+params:
+  test_data: ""
+---
+
+```{r, results='asis', echo = FALSE}
+library(magrittr)
+x <- sapply(params$test_data$questions, "[", "text", USE.NAMES = FALSE) %>% as.character()
+for(x in x){
+  cat(x)
+  cat("And this is the answer.")
+  cat("\n")
+  cat("\n")
+}
+
+
+```
+
+
+```{r, results='asis'}
+headers <- list("We","are","your","friends")
+for (i in headers){
+  cat("\n##H ", i, "  \n")
+  cat("comment",i)
+}
+```
