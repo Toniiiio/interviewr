@@ -1,0 +1,22 @@
+---
+title: "Untitled"
+output: html_document
+params:
+  test_data: list("x <- 2", "x <- 4")
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, results = 'asis', echo = F}
+hook <- knitr::hooks_html()$source
+opts <- knitr::opts_chunk$get()
+r <- params$test_data
+chunks <- eval(parse(text = r))
+
+for(nr in seq_along(chunks)){
+cat(paste0("## Heading ", nr, "\n"))
+  cat(hook(chunks[nr], options = opts))
+}
+```
