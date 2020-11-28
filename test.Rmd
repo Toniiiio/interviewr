@@ -77,16 +77,25 @@ insert_amt_hints <- function(amt_hints){
 
 }
 
-insert_provided_code <- function(code_string, opts){
+insert_provided_code <- function(code_string, opts, is_r = TRUE){
   
   cat("<b>The code provided by the candidate reads: </b>")
   cat("\n\n")
 
+  opts$highlight <- is_r
   cat(hook(code_string, options = opts))
   cat("\n\n")
   cat("\n\n")
   
 }
+
+insert_language <- function(language){
+  
+  cat(glue("{language} was used to answer this question."))
+  cat("\n\n")
+  
+}
+
 
 insert_question <- function(question){
   
@@ -100,27 +109,46 @@ insert_code_result <- function(code){
 
   cat("<b>The result provided by the candidate reads: </b>")
   cat("\n\n")
-  cat(code)
+  
+  if(is.data.frame(code)){
+    
+    print(knitr::kable(code))
+
+  }else{
+    
+    print(code)    
+    
+  }
+
+
   cat("\n\n")
   
 }
 
-insert_code_result_hint <- function(params){
+insert_code_result_hint_language <- function(params){
   
-  code <- params$test_data$answers_result[[nr]] %>% gsub(pattern = "\n", replacement = "\n\n")
+  # code <- params$test_data$answers_result[[nr]] %>% gsub(pattern = "\n", replacement = "\n\n")
+  code <- params$test_data$answers_result[[nr]]
+  is_df <- is.data.frame(code)
   
-  no_code <- !nchar(code)
+  if(!is_df) code <- code %>% gsub(pattern = "\n", replacement = "\n\n")
+   
+  no_code <- !sum(nchar(code))
   if(no_code){
     
     cat("<b>The applicant did not provide code. </b>")
     cat("\n\n")
         
   }else{
+    
+    language <- params$test_data$used_language[[nr]]
+    insert_language(language)
 
     insert_code_result(code)  
   
     code_string <- params$test_data$answers_code[[nr]]
-    insert_provided_code(code_string, opts)
+    is_r <- params$test_data$used_language[[nr]] == "R"
+    insert_provided_code(code_string, opts, is_r = is_r)
   
     amt_hints <- params$test_data$hint_nr[[nr]]
     insert_amt_hints(amt_hints)
@@ -130,13 +158,12 @@ insert_code_result_hint <- function(params){
 
 questions <- sapply(params$test_data$questions, "[", "text", USE.NAMES = FALSE) %>% as.character()
 
-
 for(nr in seq(questions)){
    
   question <- questions[nr]
   insert_question(question)
-  
-  insert_code_result_hint(params)
+
+  insert_code_result_hint_language(params)
 
   comment <- params$test_data$comments[[nr]]
   insert_user_comment(comment, hook, opts)

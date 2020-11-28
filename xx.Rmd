@@ -1,22 +1,28 @@
 ---
-title: "Untitled"
+title: "xx"
 output: html_document
 params:
-  test_data: list("x <- 2", "x <- 4")
+  code: list(language = "SQL", code_string = "SELECT * FROM tbl LIMIT 15")
 ---
+   
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+
 ```{r, results = 'asis', echo = F}
+chunks <- eval(parse(text = params$code))
 hook <- knitr::hooks_html()$source
 opts <- knitr::opts_chunk$get()
-r <- params$test_data
-chunks <- eval(parse(text = r))
 
-for(nr in seq_along(chunks)){
-cat(paste0("## Heading ", nr, "\n"))
-  cat(hook(chunks[nr], options = opts))
-}
+opts$highlight <- FALSE
+code_string <- chunks$code_string
+cat(hook(code_string, options = opts))
+
+knitr::kable(list(mtcars))
+knitr::kable(mtcars)
+knitr::kable(list(1,2,3,4))
+print(list(1,2,3,4))
+
 ```

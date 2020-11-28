@@ -30,10 +30,9 @@ source("questions.R")
   
 language_choices <- c("R", "Python", "SQL", "Javascript", "C++")
 
-selectedQuestionIndex <- c(1, 3, 4)
-selectedLanguageIndex <- 1:5
+selectedQuestionIndex <- 1:5
+allowed_language <- 1:5
 
-language_choices <- language_choices[selectedLanguageIndex]
 questions <- questions[selectedQuestionIndex]
 
 time_to_use <- 140
@@ -68,7 +67,11 @@ server <- shinyServer(function(input, output, session) {
     test_started = FALSE,
     question_nr = 1,
     user_id = NULL,
+    editor_value = "1",
+    is_r_plot = FALSE,
     questions = questions,
+    used_language = rep(0, length(questions)) %>% as.list(),
+    language_choices = language_choices,
     is_valid_id = NULL,
     hint_nr = rep(0, length(questions)) %>% as.list(),
     comments = rep("", length(questions)) %>% as.list(),
@@ -83,7 +86,22 @@ server <- shinyServer(function(input, output, session) {
   )
 
   observe({
+    
+    global$language_choices <- global$questions[[global$question_nr]]$languages
+    
+  })
+  
+  observe({
+    
+    global$used_language[[global$question_nr]] <- input$language
+    
+  })
+  
+  
+  observe({
+    
     global$user_info <- read.csv2(file = "users.txt")
+    
   })
 
   observe({
@@ -107,7 +125,9 @@ server <- shinyServer(function(input, output, session) {
 
 
   observeEvent(input$start_test, {
+    
     global$test_started <- TRUE
+    
   })
 
   observeEvent(global$set_as_participated, {
@@ -192,6 +212,7 @@ server <- shinyServer(function(input, output, session) {
 
 
   observe({
+    
     req(global$time_left)
     if(global$time_left == 30){
       showModal(modalDialog(
@@ -200,6 +221,7 @@ server <- shinyServer(function(input, output, session) {
       have interruptions while you code."
       ))
     }
+    
   })
 
   output$nextQue <- renderUI({
@@ -231,7 +253,7 @@ server <- shinyServer(function(input, output, session) {
       
       out <- tagList(
         htmlOutput("time_left"),
-        selectInput(inputId = "language", label = "Select Language: ", choices = language_choices),
+        selectInput(inputId = "language", label = "Select Language: ", choices = global$language_choices),
         hint,
         textOutput("question")
       )
@@ -253,16 +275,20 @@ server <- shinyServer(function(input, output, session) {
 
 
   observe({
+    
     req(input$comment)
     print(input$comment)
     global$comments[[global$question_nr]] <- input$comment
     # not working    
     #shinyjs::runjs("$('#comment').attr('maxlength', 10)")
+    
   })
 
   observe({
+    
     invalidateLater(millis = 1000)
     global$time_left <- round(difftime(global$start_time, Sys.time(), units = "secs") + global$time_to_use)
+    
   })
 
   output$time_left <- renderText({
@@ -276,67 +302,107 @@ server <- shinyServer(function(input, output, session) {
   })
 
   observeEvent(global$time_left, {
+    
     global$display <- global$time_left > 0
+    
   })
+  
+  # observe({
+  # 
+  #   req(input$code)
+  #   global$editor_value <- input$code
+  # 
+  # })
+  
+
+  observeEvent(input$language, {
+
+    isolate({
+      # todo: refactor
+      global$editor_value = ifelse(
+        test = input$language == "SQL",
+        yes = "SELECT * FROM airquality LIMIT 5",
+        no = "1"
+      )
+
+      if(input$language == "Python"){
+        global$editor_value = "result = 42"
+      }
+
+    })
+
+  })
+  
 
   output$code_editor <- renderUI({
     
     input$next_question
+    global$editor_value
+    # global$is_r_plot
     
-    if(global$display & !global$finished){
+    isolate({
       
-      editor_default_val = ifelse(
-        test = input$language == "SQL", 
-        yes = "SELECT * FROM mtcars LIMIT 5", 
-        no = ""
-      )
-      
-      isolate({
-        fluidRow(
-          column(
-            12,
-            h5("Editor:"),
-            # uiOutput("uiAce"),
-
-            aceEditor("code", mode = "r", height = "200px", value = editor_default_val), #init[[input$language]]
-            actionButton("eval", "Run Code")
-          ),
+      if(global$display & !global$finished){
+        
+        if(global$is_r_plot){
+          
+          console_output <- plotOutput("console_output")
+          
+        }else{
+          
+          console_output <- verbatimTextOutput("console_output")
+          
+        } 
+        
+        isolate({
           fluidRow(
             column(
               12,
-              h5("Console / Output:"),
-              verbatimTextOutput("output")
+              h5("Editor:"),
+              # uiOutput("uiAce"),
+              
+              aceEditor("code", mode = "r", height = "200px", value = global$editor_value), #init[[input$language]]
+              actionButton("eval", "Run Code")
+            ),
+            fluidRow(
+              column(
+                12,
+                h5("Console / Output:"),
+                console_output
+              )
             )
           )
+        })
+      }else if(!global$finished){ # also make it possible for user to provide comment when the time
+        # is not up yet -> dont use !global$display & 
+        textInput(
+          inputId = "comment",
+          label = "Optional: Leave a comment - (What would you have done with more time?)",
+          placeholder = "I would have vectorised the code."
         )
-      })
-    }else if(!global$finished){ # also make it possible for user to provide comment when the time
-      # is not up yet -> dont use !global$display & 
-      textInput(
-        inputId = "comment",
-        label = "Optional: Leave a comment - (What would you have done with more time?)",
-        placeholder = "I would have vectorised the code."
-      )
-    }else{
-      h4("You are finished! Thank you for participating.")
-    }
+      }else{
+        h4("You are finished! Thank you for participating.")
+      }
+      
+    })
 
   })
 
   output$question <- renderText({
+    
     global$questions[[global$question_nr]]$text
+    
   })
 
   observeEvent(eventExpr = input$next_question, {
       
-    print("input$code")
-    print(input$code)
     global$answers_code[[global$question_nr]] <- as.character(input$code)
-    print(global$answers_code)
-    print(length(global$answers_code))
     correct_solution <- global$questions[[global$question_nr]]$solution
-    provided_solution <- tryCatch(eval(parse(text = isolate(input$code))), error = function(e) return(e))
-    global$answers_result[[global$question_nr]] = provided_solution %>% toString()
+    provided_solution <- result_from_code() #tryCatch(eval(parse(text = isolate(input$code))), error = function(e) return(e))
+
+    # prevent accidentally removing items by setting them to NULL, with toString()
+    if(is.null(provided_solution)) provided_solution <- ""
+    global$answers_result[[global$question_nr]] = provided_solution
     global$is_answer_correct[[global$question_nr]] = identical(correct_solution, provided_solution)
 
     if(global$question_nr < length(global$questions)){
@@ -358,10 +424,13 @@ server <- shinyServer(function(input, output, session) {
   })
 
   output$uiAce <- renderUI({
+    
     aceEditor("code", mode = "r", height = "200px", value = "1") #init[[input$language]]
+    
   })
 
   observe({
+    
     updateAceEditor(
       session,
       "ace",
@@ -371,21 +440,31 @@ server <- shinyServer(function(input, output, session) {
       useSoftTabs = TRUE,
       showInvisibles = TRUE
     )
+    
   })
 
-  output$output <- renderPrint({
+  result_from_code <- reactive({
+  
+    if(is.null(input$eval)) return("")
+    if(!input$eval) return("")
+
+    global$is_r_plot <- grepl(pattern = "plot(", x = input$code, fixed = TRUE) #input$code
     
-    input$eval
-    isolate({
+    if(global$is_r_plot){
       
-      req(nchar(input$code))
+      return(input$code)
+      
+    }
+
+      
+    isolate({
+
+      no_code <- !nchar(input$code)
+      if(no_code) return("")
       
       if(input$language == "R"){
-        return(eval(
-          parse(
-            text = isolate(input$code)
-          )
-        ))
+        x <- tryCatch(eval(parse(text = isolate(input$code))), error = function(e) e)
+        return(x)
       }
       
       if(input$language == "Javascript"){
@@ -418,11 +497,10 @@ server <- shinyServer(function(input, output, session) {
         
         isolate({
           
-          data("mtcars")
-          conn <- dbConnect(RSQLite::SQLite(), "CarsDB.db")
-          dbWriteTable(conn, "mtcars", mtcars, overwrite = TRUE)
+          data("airquality")
+          conn <- dbConnect(RSQLite::SQLite(), "interviewr.db")
+          dbWriteTable(conn, "airquality", airquality, overwrite = TRUE)
           sql_result <- dbGetQuery(conn, input$code)
-          
           return(sql_result)
           
         })
@@ -430,9 +508,44 @@ server <- shinyServer(function(input, output, session) {
       }
       
     })
-
       
-    })
+  })
+  
+  observe({
+    
+    xx <- result_from_code()
+
+    if(global$is_r_plot){
+
+      output$console_output <- renderPlot({
+        code <- "plot(2)"
+        eval(parse(text = code))
+        p <- recordPlot()
+        plot.new() ## clean up device
+        p # redraw
+      })
+        
+      #   eval(parse(text = "plot(33)"))
+      #   p <- recordPlot()
+      #   plot.new() ## clean up device
+      #   return(p) # redraw
+      #   
+      # }) 
+      
+    }else{
+      
+      output$console_output <- renderPrint({
+        
+        result <- result_from_code()
+        req(nchar(result) > 0)
+        print(result)
+        
+      })
+      
+    }
+    
+  })
+
   
 })
 
