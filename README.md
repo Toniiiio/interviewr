@@ -3,7 +3,7 @@
 [![CRAN version](http://www.r-pkg.org/badges/version/interviewr)](https://cran.r-project.org/package=interviewr)
 
 
-# interviewr: An online coding test for data science (open source).
+# interviewr: An online coding test for data science.
 
 Test your candidates in R, Python, C++, SQL, Javascript,...
 
