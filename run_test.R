@@ -56,7 +56,7 @@ ui <- shinyUI(
     useShinyjs(),
     # uiOutput("ui2"),
     h2("Online Code Test:"),
-    uiOutput("test_ui"),
+    uiOutput("test_ui")
   )
 )
 
@@ -165,8 +165,7 @@ server <- shinyServer(function(input, output, session) {
       out <- tagList(
         uiOutput("config"),
         uiOutput("show_sql_table"),
-        uiOutput("code_editor"),
-        uiOutput("nextQue")
+        uiOutput("code_editor")
       )
 
       global$set_as_participated <- TRUE
@@ -277,7 +276,6 @@ server <- shinyServer(function(input, output, session) {
   observe({
     
     req(input$comment)
-    print(input$comment)
     global$comments[[global$question_nr]] <- input$comment
     # not working    
     #shinyjs::runjs("$('#comment').attr('maxlength', 10)")
@@ -332,27 +330,27 @@ server <- shinyServer(function(input, output, session) {
     })
 
   })
-  
+
 
   output$code_editor <- renderUI({
     
     input$next_question
     global$editor_value
-    # global$is_r_plot
     
     isolate({
       
       if(global$display & !global$finished){
+        print(global$is_r_plot)
         
         if(global$is_r_plot){
-          
-          console_output <- plotOutput("console_output")
-          
+
+          console_output <- "" #plotOutput("console_output2")
+           
         }else{
-          
+           
           console_output <- verbatimTextOutput("console_output")
-          
-        } 
+         
+        }
         
         isolate({
           fluidRow(
@@ -362,14 +360,17 @@ server <- shinyServer(function(input, output, session) {
               # uiOutput("uiAce"),
               
               aceEditor("code", mode = "r", height = "200px", value = global$editor_value), #init[[input$language]]
-              actionButton("eval", "Run Code")
-            ),
-            fluidRow(
-              column(
-                12,
-                h5("Console / Output:"),
-                console_output
+              fluidRow(
+                column(width = 1, offset = 0, actionButton("eval", "Run Code")),
+                column(width = 1, uiOutput("nextQue")),
+                column(width = 10)
               )
+            ),
+            column(
+              12,
+              h5("Console / Output:"),
+              console_output,
+              plotOutput("console_output2")
             )
           )
         })
@@ -424,9 +425,7 @@ server <- shinyServer(function(input, output, session) {
   })
 
   output$uiAce <- renderUI({
-    
-    aceEditor("code", mode = "r", height = "200px", value = "1") #init[[input$language]]
-    
+      aceEditor("code", mode = "r", height = "200px", value = "1")
   })
 
   observe({
@@ -463,8 +462,8 @@ server <- shinyServer(function(input, output, session) {
       if(no_code) return("")
       
       if(input$language == "R"){
-        x <- tryCatch(eval(parse(text = isolate(input$code))), error = function(e) e)
-        return(x)
+        parsed_code <- tryCatch(eval(parse(text = isolate(input$code))), error = function(e) e)
+        return(parsed_code)
       }
       
       if(input$language == "Javascript"){
@@ -511,38 +510,76 @@ server <- shinyServer(function(input, output, session) {
       
   })
   
-  observe({
-    
-    xx <- result_from_code()
+  observe(shinyjs::hide(id = "console_output2"))
+  
+  observeEvent(input$eval, {
 
-    if(global$is_r_plot){
+    is_r_plot <- grepl(pattern = "plot(", x = input$code, fixed = TRUE)    
 
-      output$console_output <- renderPlot({
-        code <- "plot(2)"
-        eval(parse(text = code))
-        p <- recordPlot()
-        plot.new() ## clean up device
-        p # redraw
-      })
-        
-      #   eval(parse(text = "plot(33)"))
-      #   p <- recordPlot()
-      #   plot.new() ## clean up device
-      #   return(p) # redraw
-      #   
-      # }) 
+    # toggle somehow isnt triggered if its not a plot code
+    if(is_r_plot){
+      
+      shinyjs::hide(id = "console_output")
+      shinyjs::show(id = "console_output2")
       
     }else{
       
-      output$console_output <- renderPrint({
-        
-        result <- result_from_code()
-        req(nchar(result) > 0)
-        print(result)
-        
-      })
+      shinyjs::show(id = "console_output")
+      shinyjs::hide(id = "console_output2")
       
     }
+
+    
+  }, priority = 99)
+  
+    
+  observe({
+
+    input$eval
+    
+    isolate({
+    
+      req(input$code)
+      is_r_plot <- grepl(pattern = "plot(", x = input$code, fixed = TRUE)
+      
+      if(is_r_plot){
+        
+        output$console_output2 <- renderPlot({
+          
+          input$eval 
+          
+          isolate({
+            
+            code <- input$code
+            if(is_r_plot){
+              eval(parse(text = code))
+              p <- recordPlot()
+              plot.new()
+              return(p)
+            }
+            
+          })
+        })
+        
+      }else{
+        
+        output$console_output <- renderPrint({
+          
+          input$eval 
+          
+          isolate({
+            
+            result <- result_from_code()
+            req(nchar(result) > 0)
+            print(result)
+            
+          })
+          
+        })
+        
+      }
+        
+    })
     
   })
 

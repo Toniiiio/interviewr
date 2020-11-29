@@ -395,38 +395,98 @@ g-table-intro h4 {
 <p>If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23. Find the sum of all the multiples of 3 or 5 below 1000.</p>
 <p>R was used to answer this question.</p>
 <p><b>The result provided by the candidate reads: </b></p>
-<p>[1] “1”</p>
+<p>[1] “499500”</p>
 <p><b>The code provided by the candidate reads: </b></p>
 <div class="source">
-<pre class="knitr r"><span class="hl num">1</span>
+<pre class="knitr r"><span class="hl std">x</span> <span class="hl kwb">&lt;-</span> <span class="hl num">1</span><span class="hl opt">:</span><span class="hl num">999</span>
+<span class="hl kwd">sum</span><span class="hl std">(x)</span>
 </pre>
 </div>
-<p>The candidate used 0 hints.</p>
+<p>The candidate used 2 hints.</p>
 </div>
 <div id="question-2" class="section level3">
 <h3>Question 2 :</h3>
 <p>Make a query to get the average temperature in May (Month 5).</p>
-<p><b>The applicant did not provide code. </b></p>
-</div>
-<div id="question-3" class="section level3">
-<h3>Question 3 :</h3>
-<p>Classical FizzBuzz: Print every number between 1 and 100, However for numbers that are multiples of 3 print “Fizz” and for numbers that are multiples of five print “Buzz.” For numbers that are multiples of both 3 and 5 print “FizzBuzz”.</p>
-<p>R was used to answer this question.</p>
+<p>SQL was used to answer this question.</p>
 <p><b>The result provided by the candidate reads: </b></p>
-<p>[1] “Error in parse(text = isolate(input$code)): <text>:1:2: unerwartetes Symbol1: 1a^”</p>
+<table>
+<thead>
+<tr class="header">
+<th align="right">Ozone</th>
+<th align="right">Solar.R</th>
+<th align="right">Wind</th>
+<th align="right">Temp</th>
+<th align="right">Month</th>
+<th align="right">Day</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">41</td>
+<td align="right">190</td>
+<td align="right">7.4</td>
+<td align="right">67</td>
+<td align="right">5</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="right">36</td>
+<td align="right">118</td>
+<td align="right">8.0</td>
+<td align="right">72</td>
+<td align="right">5</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="right">12</td>
+<td align="right">149</td>
+<td align="right">12.6</td>
+<td align="right">74</td>
+<td align="right">5</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="right">18</td>
+<td align="right">313</td>
+<td align="right">11.5</td>
+<td align="right">62</td>
+<td align="right">5</td>
+<td align="right">4</td>
+</tr>
+<tr class="odd">
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">14.3</td>
+<td align="right">56</td>
+<td align="right">5</td>
+<td align="right">5</td>
+</tr>
+</tbody>
+</table>
 <p><b>The code provided by the candidate reads: </b></p>
-<p>Error in parse(text = code, keep.source = FALSE) : <text>:1:2: unerwartetes Symbol 1: 1a ^</p>
-<pre><code>## Warning in highr::hilight(x, format, prompt = options$prompt, markup = opts$markup): the syntax of the source code is invalid; the fallback mode is used</code></pre>
 <div class="source">
-<pre class="knitr r">1a
+<pre class="knitr r">SELECT * FROM airquality LIMIT 5
 </pre>
 </div>
 <p>The candidate used 0 hints.</p>
 </div>
+<div id="question-3" class="section level3">
+<h3>Question 3 :</h3>
+<p>Classical FizzBuzz: Print every number between 1 and 100, However for numbers that are multiples of 3 print “Fizz” and for numbers that are multiples of five print “Buzz.” For numbers that are multiples of both 3 and 5 print “FizzBuzz”.</p>
+<p><b>The applicant did not provide code. </b></p>
+</div>
 <div id="question-4" class="section level3">
 <h3>Question 4 :</h3>
 <p>Sum of all prime numbers below 5000 that can be devided by 72</p>
-<p><b>The applicant did not provide code. </b></p>
+<p>Python was used to answer this question.</p>
+<p><b>The result provided by the candidate reads: </b></p>
+<p>[1] “42”</p>
+<p><b>The code provided by the candidate reads: </b></p>
+<div class="source">
+<pre class="knitr r">result = 42
+</pre>
+</div>
+<p>The candidate used 0 hints.</p>
 </div>
 <div id="question-5" class="section level3">
 <h3>Question 5 :</h3>
