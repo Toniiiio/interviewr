@@ -339,18 +339,21 @@ server <- shinyServer(function(input, output, session) {
     
     isolate({
       
+      is_r_plot <- grepl(pattern = "plot(", x = input$code, fixed = TRUE)
+      
       if(global$display & !global$finished){
-        print(global$is_r_plot)
+        print(is_r_plot)
         
-        if(global$is_r_plot){
-
-          console_output <- "" #plotOutput("console_output2")
-           
-        }else{
-           
-          console_output <- verbatimTextOutput("console_output")
-         
-        }
+        # if(is_r_plot){
+        # 
+        #   console_output <- "" #plotOutput("console_output2")
+        #    
+        # }else{
+        #    
+        # 
+        #  
+        # }
+        console_output <- verbatimTextOutput("console_output")
         
         isolate({
           fluidRow(
@@ -362,7 +365,7 @@ server <- shinyServer(function(input, output, session) {
               aceEditor("code", mode = "r", height = "200px", value = global$editor_value), #init[[input$language]]
               fluidRow(
                 column(width = 1, offset = 0, actionButton("eval", "Run Code")),
-                column(width = 1, uiOutput("nextQue")),
+                column(width = 1, offset = 0, style='padding:0px;', uiOutput("nextQue")),
                 column(width = 10)
               )
             ),
@@ -509,8 +512,6 @@ server <- shinyServer(function(input, output, session) {
     })
       
   })
-  
-  observe(shinyjs::hide(id = "console_output2"))
   
   observeEvent(input$eval, {
 

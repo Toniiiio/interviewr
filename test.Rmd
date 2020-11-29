@@ -110,10 +110,15 @@ insert_code_result <- function(code){
   cat("<b>The result provided by the candidate reads: </b>")
   cat("\n\n")
   
+  is_plot <- grepl(pattern = "plot(", x = code, fixed = TRUE)
   if(is.data.frame(code)){
     
     print(knitr::kable(code))
 
+  }else if(is_plot){
+    
+    eval(parse(text = code))
+    
   }else{
     
     print(code)    

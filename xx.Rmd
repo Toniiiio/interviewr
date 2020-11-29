@@ -11,18 +11,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-```{r, results = 'asis', echo = F}
-chunks <- eval(parse(text = params$code))
-hook <- knitr::hooks_html()$source
-opts <- knitr::opts_chunk$get()
-
-opts$highlight <- FALSE
-code_string <- chunks$code_string
-cat(hook(code_string, options = opts))
-
-knitr::kable(list(mtcars))
-knitr::kable(mtcars)
-knitr::kable(list(1,2,3,4))
-print(list(1,2,3,4))
-
+```{r}
+print(2)
+eval(parse(text = "plot(2)"))
+print(2)
 ```
