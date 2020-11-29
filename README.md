@@ -7,6 +7,11 @@
 
 Test your candidates in R, Python, C++, SQL, Javascript,...
 
+Time is a limiting factor, especially at work. So we can´t give all the candidates a proper chance to demonstrate
+their coding and data science skills in an interview.
+
+`interviewr` automizes the process, like other online coding tests. But it is open source and free to use for everyone!
+
 ## Status
 
 
