@@ -3,9 +3,9 @@
 [![CRAN version](http://www.r-pkg.org/badges/version/interviewr)](https://cran.r-project.org/package=interviewr)
 
 
-# interviewr: An open source online coding test for data science.
+# interviewr: An online coding test for data science (open source).
 
-> A website consists on average of 70 requests, only one will yield your target information. Why would you want to load the other 69?
+Test your candidates in R, Python, C++, SQL, Javascript,...
 
 ## Status
 
