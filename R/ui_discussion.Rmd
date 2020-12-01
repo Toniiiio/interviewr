@@ -7,4 +7,15 @@ output: html_document
 How should "show hint" look like?
 - give the user an overview how many questions exist
 - at which question he currently is
+=======
+---
+title: "Untitled"
+output: html_document
+---
+
+
+How should "show hint" look like?
+- give the user an overview how many questions exist
+- at which question he currently is
+>>>>>>> b7fd99a0adb9419fc0f9c4394a38b72c50f0498d
 - if there is an open question

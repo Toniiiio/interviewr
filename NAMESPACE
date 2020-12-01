@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 exportPattern("^[[:alpha:]]+")
+=======
+exportPattern("^[[:alpha:]]+")
+>>>>>>> b7fd99a0adb9419fc0f9c4394a38b72c50f0498d
