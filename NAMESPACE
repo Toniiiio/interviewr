@@ -1,1 +1,2 @@
 exportPattern("^[[:alpha:]]+")
+importFrom(shiny, DBI, shinythemes, shinyAce, shinyjs, glue, V8, reticulate, Rcpp, magrittr)
