@@ -7,13 +7,11 @@ user_info <- data.frame(
 #
 
 
-pckgs <- c("shiny", "DBI", "shinythemes", "shinyAce", "shinyjs", "glue", "V8", "reticulate", "Rcpp", "magrittr")
-#VG9uaW8gTGllYnJhbmQ=
-
-mssng_pckg <- pckgs[!(pckgs %in% installed.packages())]
-if(length(mssng_pckg)) install.packages(mssng_pckg)
-
-sapply(pckgs, library, character.only = TRUE)
+# pckgs <- c("shiny", "DBI", "shinythemes", "shinyAce", "shinyjs", "glue", "V8", "reticulate", "Rcpp", "magrittr")
+# #VG9uaW8gTGllYnJhbmQ=
+# mssng_pckg <- pckgs[!(pckgs %in% installed.packages())]
+# if(length(mssng_pckg)) install.packages(mssng_pckg)
+# sapply(pckgs, library, character.only = TRUE)
 # library(shiny)
 # library(shinyAce)
 # library(shinyjs)
