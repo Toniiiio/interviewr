@@ -99,7 +99,7 @@ server <- shinyServer(function(input, output, session) {
   
   observe({
     
-    global$user_info <- read.csv2(file = "R/users.txt")
+    global$user_info <- read.csv2(file = "users.txt")
     
   })
 
