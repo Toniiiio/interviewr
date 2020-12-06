@@ -1,2 +1,0 @@
-"";"id";"name";"participated"
-"1";"awd2z";"Tonio Liebrand";FALSE

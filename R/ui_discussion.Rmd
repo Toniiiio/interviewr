@@ -1,9 +1,0 @@
----
-title: "Untitled"
-output: html_document
----
-
-
-How should "show hint" look like?
-- give the user an overview how many questions exist
-- at which question he currently is
